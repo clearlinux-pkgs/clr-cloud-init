@@ -4,7 +4,7 @@
 #
 Name     : clr-cloud-init
 Version  : 21
-Release  : 23
+Release  : 24
 URL      : https://github.com/clearlinux/clr-cloud-init/releases/download/v21/clr-cloud-init-21.tar.xz
 Source0  : https://github.com/clearlinux/clr-cloud-init/releases/download/v21/clr-cloud-init-21.tar.xz
 Summary  : No detailed summary available
