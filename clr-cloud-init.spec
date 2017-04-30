@@ -4,7 +4,7 @@
 #
 Name     : clr-cloud-init
 Version  : 24
-Release  : 26
+Release  : 27
 URL      : https://github.com/clearlinux/clr-cloud-init/releases/download/v24/clr-cloud-init-24.tar.xz
 Source0  : https://github.com/clearlinux/clr-cloud-init/releases/download/v24/clr-cloud-init-24.tar.xz
 Summary  : No detailed summary available
@@ -12,6 +12,7 @@ Group    : Development/Tools
 License  : GPL-3.0
 Requires: clr-cloud-init-bin
 Requires: clr-cloud-init-config
+Requires: clr-cloud-init-autostart
 Requires: clr-cloud-init-doc
 BuildRequires : e2fsprogs-bin
 BuildRequires : pkgconfig(blkid)
@@ -30,6 +31,14 @@ Contents:
 1) Description of this project
 2) Compiling, prerequisites
 3) Bugs and feedback?
+
+%package autostart
+Summary: autostart components for the clr-cloud-init package.
+Group: Default
+
+%description autostart
+autostart components for the clr-cloud-init package.
+
 
 %package bin
 Summary: bin components for the clr-cloud-init package.
@@ -60,21 +69,33 @@ doc components for the clr-cloud-init package.
 %setup -q -n clr-cloud-init-24
 
 %build
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost,127.0.0.1,0.0.0.0
+export LANG=C
+export SOURCE_DATE_EPOCH=1493567687
 %configure --disable-static
 make V=1  %{?_smp_mflags}
 
 %check
+export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
-export no_proxy=localhost
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
+export SOURCE_DATE_EPOCH=1493567687
 rm -rf %{buildroot}
 %make_install
 
 %files
 %defattr(-,root,root,-)
+
+%files autostart
+%defattr(-,root,root,-)
+/usr/lib/systemd/system/multi-user.target.wants/cloud-init-pre-network.service
+/usr/lib/systemd/system/multi-user.target.wants/cloud-init.service
 
 %files bin
 %defattr(-,root,root,-)
@@ -82,12 +103,12 @@ rm -rf %{buildroot}
 
 %files config
 %defattr(-,root,root,-)
+%exclude /usr/lib/systemd/system/multi-user.target.wants/cloud-init-pre-network.service
+%exclude /usr/lib/systemd/system/multi-user.target.wants/cloud-init.service
 /usr/lib/systemd/system/cloud-init-pre-network.service
 /usr/lib/systemd/system/cloud-init.service
-/usr/lib/systemd/system/multi-user.target.wants/cloud-init-pre-network.service
-/usr/lib/systemd/system/multi-user.target.wants/cloud-init.service
 
 %files doc
 %defattr(-,root,root,-)
 %doc /usr/share/man/man1/*
-%doc /usr/share/man/man5/*
+%exclude /usr/share/man/man5/cloud-config.5
